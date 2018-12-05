@@ -2,4 +2,5 @@
 *.jpg
 .DS_Store
 *.txt
-*mod.xml
+*.xml
+*.ini
