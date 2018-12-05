@@ -1,5 +1,5 @@
 *.json
 *.jpg
 .DS_Store
-.txt
-.xml
+*.txt
+*.xml
