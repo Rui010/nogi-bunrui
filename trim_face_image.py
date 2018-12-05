@@ -2,25 +2,39 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import configparser
 from PIL import Image
 
-in_jpg = "./karin/1.jpg"
-out_jpg = "./test.jpg"
+# 設定ファイルに取り込むディレクトリを記載
+inifile = configparser.ConfigParser()
+inifile.read("./config.ini", "UTF-8")
+DIRS = inifile.get('settings', 'dirs').split(",")
 
-plt.show(plt.imshow(np.asarray(Image.open(in_jpg))))
+CASCADE_FILE = "./model/haarcascade_frontalface_alt.xml"
 
-image_gs = cv2.imread(in_jpg)
+def trim_face(in_jpg, out_jpg):
+    image = cv2.imread(in_jpg)
+    cascade = cv2.CascadeClassifier(CASCADE_FILE)
+    face_list = cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=1, minSize=(45,45))
+    if len(face_list) > 0:
+        for rect in face_list:
+            _img = image[rect[1]:rect[1]+rect[3], rect[0]: rect[0]+rect[2]]
+            _img = cv2.resize(_img, dsize=(64,64))
+            cv2.imwrite(out_jpg, _img)
+        return True
+    else:
+        return False
 
-cascade = cv2.CascadeClassifier("")
 
-face_list = cascade.detectMultiScale(image_gs, scaleFactor=1.1, minNeighbors=1, minSize=(100,100))
-
-if len(face_list) > 0:
-    for rect in face_list:
-        image_gs = image_gs[rect[1]:rect[1]+rect[3], rect[0]: rect[0]+rect[2]]
-else:
-    print("no face")
-
-cv2.imwrite(out_jpg, image_gs)
-
-plt.show(plt.imshow(np.asarray(Image.open(out_jpg))))
+if __name__ == "__main__":
+    for dir in DIRS:
+        print("Progress..." + dir)
+        files = os.listdir(dir)
+        ind = 1
+        for f in files:
+            path = os.path.join(dir,"face")
+            if not os.path.exists(path):
+                os.mkdir(path)
+            if trim_face(os.path.join(dir,f), os.path.join(dir,"face", str(ind) + ".jpg")):
+                ind += 1
+                print("%d ％" % ((ind / len(files))*100))
