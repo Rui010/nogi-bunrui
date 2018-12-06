@@ -11,37 +11,39 @@ inifile = configparser.ConfigParser()
 inifile.read("./config.ini", "UTF-8")
 DIRS = inifile.get('settings', 'dirs').split(",")
 DATA_DIR = "data"
+TRAIN_DIR = "face"
 
 H = 64
 W = 64
-# jpgをCSV
+# jpgをCSV RGBの3チャネル
 def convert_train_image(img):
     _img = cv2.imread(img)
-    _img = cv2.resize(_img, (H, W))
-    print(type(_img), _img.shape)
+    # _img = cv2.resize(_img, (H, W))
     return _img
 
 # One-hot vector
-def convert_teach_data(list):
-    pass
+def convert_teach_data(vector):
+    n_labels = len(np.unique(vector))
+    return np.eye(n_labels)[vector]
 
 def save_npy(output_file, ndarray_data):
-    np.save(os.path.join(DATA_DIR, output_file))
+    np.save(os.path.join(DATA_DIR, output_file + ".npy"), ndarray_data)
     return True
 
-print(convert_train_image("test.jpg"))
-
-# if __name__ == "__main__":
-#     X = []
-#     t = []
-#     for img in os.listdir(os.path.join(DIRS[0], "face")):
-#         img_arr = [Image.open(img)]
-#         print(img_arr)
-#         print(img_arr.shape())
-#         X.append(img_arr)
-#         t.append(0)
-#     X = X.astype('float32')
-#     X = X / 255
-#     # Y = np_utils.to_categorical(Y, 10)
-#     print(X)
-#     print(Y)
+if __name__ == "__main__":
+    X = np.zeros((1, H, W, 3))
+    t = []
+    for i, dir_img in enumerate(DIRS):
+        files = os.listdir(os.path.join(dir_img, TRAIN_DIR))
+        _X = np.zeros((len(files), H, W, 3))
+        _t = []
+        for j, img in enumerate(files):
+            f = os.path.join(dir_img, TRAIN_DIR, img)
+            _X[j] = convert_train_image(f)
+            _t.append(i)
+        np.concatenate([X, _X], axis=0)
+        t.extend(_t)
+    X = X.astype('float32') / 255
+    t = convert_teach_data(t)
+    save_npy("x_train", X)
+    save_npy("t_train", t)

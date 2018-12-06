@@ -16,3 +16,6 @@ dirs: trim_face_image.pyで顔検出する画像の格納フォルダ
 ## trim_face_image.py
 ディレクトリ内の画像ファイルから顔検出  
 その配下の'face'ディレクトリに顔部分を抽出した画像を格納  
+
+## convert_img_csv.py
+教師ラベルごとの画像データをnpy形式で訓練データとして保存　 
