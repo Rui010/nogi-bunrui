@@ -1,8 +1,10 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.optimizers import SGD
+from keras.layers.convolutional import Conv2D
+from keras.layers.pooling import MaxPool2D
+from keras.layers import Dense, Activation, Flatten
+from keras.optimizers import SGD, Adam
 
 # 乱数シード
 # rng = np.random.RandomState(1234)
@@ -16,22 +18,25 @@ t = np.load('./data/t_train.npy')
 n_in = len(X[0])
 n_hidden = 200
 n_out = len(t[0])
-print(n_in, n_out)
+print(np.shape(X))
 
 model = Sequential([
-    Dense(units=n_hidden),
-    Activation('sigmoid'),
+    Conv2D(32,3,input_shape=(64,64,3)),
+    Activation('relu'),
+    Flatten(),
+    Dense(n_hidden),
+    Activation('relu'),
     Dense(n_out),
     Activation('softmax')
 ])
 
 model.compile(
-    loss='binary_crossentropy', 
+    loss='categorical_crossentropy', 
     optimizer=SGD(lr=0.1),
     metrics=['accuracy']
 )
 
-model.fit(X, t, epochs=1000, batch_size=100)
+model.fit(X, t, epochs=10, batch_size=1)
 
 classes = model.predict_classes(X, batch_size=1)
 prob = model.predict_proba(X, batch_size=1)
