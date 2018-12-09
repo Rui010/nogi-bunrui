@@ -30,18 +30,26 @@ def save_npy(output_file, ndarray_data):
     np.save(os.path.join(DATA_DIR, output_file + ".npy"), ndarray_data)
     return True
 
+def num_face_files(dirs, path):
+    num = 0
+    for dir in dirs:
+        num += len(os.listdir(os.path.join(dir, path)))
+    return num
+
 if __name__ == "__main__":
-    X = np.zeros((1, H, W, 3))
+    n = num_face_files(DIRS, TRAIN_DIR)
+    X = np.zeros((n, H, W, 3))
     t = []
+    temp = 0
     for i, dir_img in enumerate(DIRS):
         files = os.listdir(os.path.join(dir_img, TRAIN_DIR))
-        _X = np.zeros((len(files), H, W, 3))
+        # _X = np.zeros((len(files), H, W, 3))
         _t = []
         for j, img in enumerate(files):
             f = os.path.join(dir_img, TRAIN_DIR, img)
-            _X[j] = convert_train_image(f)
+            X[temp + j] = convert_train_image(f)
             _t.append(i)
-        np.concatenate([X, _X], axis=0)
+        temp += len(files)
         t.extend(_t)
     X = X.astype('float32') / 255
     t = convert_teach_data(t)
