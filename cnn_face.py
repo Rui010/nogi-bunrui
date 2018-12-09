@@ -24,7 +24,9 @@ n_out = len(t[0])
 
 model = Sequential([
     Conv2D(32,3,input_shape=(64,64,3)),
-    Activation('relu'),
+    MaxPool2D(pool_size=(2,2)),
+    Conv2D(32,3),
+    MaxPool2D(pool_size=(2,2)),
     Flatten(),
     Dense(n_hidden),
     Activation('relu'),
@@ -34,11 +36,11 @@ model = Sequential([
 
 model.compile(
     loss='categorical_crossentropy', 
-    optimizer=SGD(lr=0.1),
+    optimizer=Adam(),
     metrics=['accuracy']
 )
 
-hist = model.fit(x_train, t_train, epochs=50,batch_size=10,validation_data=(x_valid, t_valid))
+hist = model.fit(x_train, t_train, epochs=10,batch_size=32,validation_data=(x_valid, t_valid))
 
 val_acc = hist.history['val_acc']
 val_loss = hist.history['val_loss']
@@ -50,3 +52,5 @@ plt.show()
 
 loss_and_metrics = model.evaluate(x_test, t_test)
 print(loss_and_metrics)
+
+model.save('./model/nogi-bunrui.h5')
