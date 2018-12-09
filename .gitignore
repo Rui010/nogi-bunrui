@@ -6,3 +6,4 @@
 *.ini
 *.npy
 *.h5
+/js/model/
