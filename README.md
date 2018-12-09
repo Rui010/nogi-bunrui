@@ -19,3 +19,15 @@ dirs: trim_face_image.pyで顔検出する画像の格納フォルダ
 
 ## convert_img_csv.py
 教師ラベルごとの画像データをnpy形式で訓練データとして保存　 
+
+## cnn_face.py
+CNNを実装し、顔画像からモデル学習する  
+
+## model_test.py
+学習モデルからテストデータを使って、顔認識とクラス分類を行う
+
+## index.html
+TensorFlow.jsを使ったフロント部分
+
+## js/predict_face.js
+TensorFlow.jsを使って、顔画像を抽出→クラス分類  
