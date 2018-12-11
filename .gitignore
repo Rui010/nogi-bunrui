@@ -7,3 +7,4 @@
 *.npy
 *.h5
 /js/model/
+/trush/
