@@ -12,21 +12,26 @@ DIRS = inifile.get('settings', 'dirs').split(",")
 
 CASCADE_FILE = "./model/haarcascade_frontalface_alt.xml"
 
-def trim_face(in_jpg, out_jpg):
-    image = cv2.imread(in_jpg)
-    cascade = cv2.CascadeClassifier(CASCADE_FILE)
-    face_list = cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=1, minSize=(45,45))
-    if len(face_list) > 0:
-        for rect in face_list:
-            _img = image[rect[1]:rect[1]+rect[3], rect[0]: rect[0]+rect[2]]
-            _img = cv2.resize(_img, dsize=(64,64))
-            cv2.imwrite(out_jpg, _img)
-        return True
-    else:
-        return False
+class TrimFace():
+    def __init__(self):
+        pass
+
+    def __call__(self, in_jpg, out_jpg):
+        image = cv2.imread(in_jpg)
+        cascade = cv2.CascadeClassifier(CASCADE_FILE)
+        face_list = cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=1, minSize=(60,60))
+        if len(face_list) > 0:
+            for rect in face_list:
+                _img = image[rect[1]:rect[1]+rect[3], rect[0]: rect[0]+rect[2]]
+                _img = cv2.resize(_img, dsize=(64,64))
+                cv2.imwrite(out_jpg, _img)
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
+    trim_face = TrimFace()
     for dir in DIRS:
         print("Progress..." + dir)
         files = os.listdir(dir)
