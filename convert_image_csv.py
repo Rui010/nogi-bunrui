@@ -18,7 +18,7 @@ W = 64
 # jpgをCSV RGBの3チャネル
 def convert_train_image(img):
     _img = cv2.imread(img)
-    # _img = cv2.resize(_img, (H, W))
+    _img = cv2.resize(_img, (H, W))
     return _img
 
 # One-hot vector
@@ -33,7 +33,7 @@ def save_npy(output_file, ndarray_data):
 def num_face_files(dirs, path):
     num = 0
     for dir in dirs:
-        num += len(os.listdir(os.path.join(dir, path)))
+        num += len(os.listdir(os.path.join("images", dir, path)))
     return num
 
 if __name__ == "__main__":
@@ -42,16 +42,18 @@ if __name__ == "__main__":
     t = []
     temp = 0
     for i, dir_img in enumerate(DIRS):
-        files = os.listdir(os.path.join(dir_img, TRAIN_DIR))
+        files = os.listdir(os.path.join("images", dir_img, TRAIN_DIR))
         # _X = np.zeros((len(files), H, W, 3))
         _t = []
         for j, img in enumerate(files):
-            f = os.path.join(dir_img, TRAIN_DIR, img)
+            f = os.path.join("images", dir_img, TRAIN_DIR, img)
             X[temp + j] = convert_train_image(f)
+            print(X[temp + j])
             _t.append(i)
         temp += len(files)
         t.extend(_t)
     X = X.astype('float32') / 255
+    # X = X.astype('float32')
     t = convert_teach_data(t)
     save_npy("x_train", X)
     save_npy("t_train", t)

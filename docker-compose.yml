@@ -1,0 +1,19 @@
+version: '2'
+services:
+  web:
+    build: ./containers/nginx
+    ports:
+     - "80:80"
+    volumes:
+     - ./public:/usr/share/nginx/html
+     - ./containers/nginx/nginx.conf:/etc/nginx/nginx.conf
+    links:
+      - flaskapp
+  flaskapp:
+    build: ./containers/flaskapp
+    volumes: 
+      - ./containers/flaskapp:/app
+    ports: 
+      - "5000:5000"
+
+    

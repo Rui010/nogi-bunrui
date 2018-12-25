@@ -3,7 +3,9 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import configparser
+import tensorflow as tf
 from keras.models import load_model
+from keras.backend import tensorflow_backend as backend
 from PIL import Image
 
 # 設定ファイルに取り込むディレクトリを記載
@@ -32,22 +34,26 @@ class TrimFace():
             return False
 
     def classify_face(self, img):
-        _img = cv2.imread(img)
-        _img = cv2.resize(_img, dsize=(64,64))
-        _img = np.expand_dims(_img, axis=0)
+        backend.clear_session()
         model = load_model(MODEL_PATH)
-        return DIRS[np.argmax(model.predict(_img))]
+        global graph
+        graph = tf.get_default_graph()
+        with graph.as_default():
+            _img = cv2.imread(img)
+            _img = cv2.resize(_img, dsize=(64,64))
+            _img = np.expand_dims(_img, axis=0)
+            return DIRS[np.argmax(model.predict(_img))]
 
 if __name__ == "__main__":
     trim_face = TrimFace()
     for dir in DIRS:
         print("Progress..." + dir)
-        files = os.listdir(os.path.join("images",dir))
+        files = os.listdir(dir)
         ind = 1
         for f in files:
-            path = os.path.join("images",dir,"face")
+            path = os.path.join(dir,"face")
             if not os.path.exists(path):
                 os.mkdir(path)
-            if trim_face(os.path.join("images",dir,f), os.path.join("images",dir,"face", str(ind) + ".jpg")):
+            if trim_face(os.path.join(dir,f), os.path.join(dir,"face", str(ind) + ".jpg")):
                 ind += 1
                 print("%d ％" % ((ind / len(files))*100))

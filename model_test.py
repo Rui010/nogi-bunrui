@@ -30,6 +30,7 @@ def detect_face(test_jpg):
     return image
 
 def classify_face(img):
+    print(model.predict(img))
     return MEMBER[np.argmax(model.predict(img))]
 
 if __name__ == "__main__":
@@ -39,4 +40,3 @@ if __name__ == "__main__":
 
     plt.imshow(class_face)
     plt.show()
-    
